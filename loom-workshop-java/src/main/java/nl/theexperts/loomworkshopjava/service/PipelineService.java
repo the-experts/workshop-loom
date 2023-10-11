@@ -6,7 +6,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 
 @Service
 public class PipelineService {
@@ -20,14 +26,28 @@ public class PipelineService {
     }
 
     public List<String> processLargeDataSet(List<String> inputData) {
-        return inputData.parallelStream()
-                .map(data -> {
+        List<Future<String>> futures = new ArrayList<>();
+
+        ThreadFactory factory = Thread.ofVirtual().factory();
+        try (ExecutorService executor = Executors.newThreadPerTaskExecutor(factory)) {
+            for (String data : inputData) {
+                Future<String> future = executor.submit(() -> {
                     String externalData = fetchExternalData(data);
                     String dbData = lookupInDatabase(externalData);
                     return intensiveComputation(externalData + " - " + dbData);
                     //return intensiveComputationPinned(externalData + " - " + dbData);
-                })
-                .toList();
+                });
+                futures.add(future);
+            }
+
+            List<String> results = new ArrayList<>();
+            for (Future<String> future : futures) {
+                results.add(future.get());
+            }
+            return results;
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String fetchExternalData(String inputData) {
