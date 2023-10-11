@@ -1,0 +1,14 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/machamp"
+  },
+  "response": {
+    "status": 200,
+    "fixedDelayMilliseconds": 50,
+    "body": "28",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/alakazam"
+  },
+  "response": {
+    "status": 200,
+    "fixedDelayMilliseconds": 80,
+    "body": "10",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

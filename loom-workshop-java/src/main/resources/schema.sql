@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS data_record
+(
+    id   BIGSERIAL PRIMARY KEY,
+    data VARCHAR(255)
+);

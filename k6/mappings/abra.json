@@ -1,0 +1,14 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/abra"
+  },
+  "response": {
+    "status": 200,
+    "fixedDelayMilliseconds": 89,
+    "body": "4",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

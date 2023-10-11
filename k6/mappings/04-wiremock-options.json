@@ -1,0 +1,22 @@
+{
+  "priority": 1,
+  "request": {
+    "method": "ANY",
+    "urlPathPattern": ".*",
+    "queryParameters": {
+      "some-id-being-matched-exactly": { "matches": "1337" },
+      "some-query-being-matched-with-regex": { "matches": ".+" }
+    }
+  },
+  "response": {
+    "status": 200,
+    "fixedDelayMilliseconds": 15,
+    "jsonBody": {
+      "details": "https://wiremock.org/docs/stubbing/",
+      "more-details": "https://wiremock.org/studio/docs/advanced-stubbing/"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
