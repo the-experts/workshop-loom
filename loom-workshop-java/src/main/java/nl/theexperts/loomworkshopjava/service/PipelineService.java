@@ -13,6 +13,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class PipelineService {
@@ -34,8 +36,7 @@ public class PipelineService {
                 Future<String> future = executor.submit(() -> {
                     String externalData = fetchExternalData(data);
                     String dbData = lookupInDatabase(externalData);
-                    return intensiveComputation(externalData + " - " + dbData);
-                    //return intensiveComputationPinned(externalData + " - " + dbData);
+                    return intensiveComputationPinned(externalData + " - " + dbData);
                 });
                 futures.add(future);
             }
@@ -79,14 +80,16 @@ public class PipelineService {
         return new StringBuilder(data).reverse().toString();
     }
 
-    private String intensiveComputationPinned(String data){
-        synchronized (this) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+    private String intensiveComputationPinned(String data) {
+        final Lock lock = new ReentrantLock();
+        lock.lock();
+        try {
+            Thread.sleep(100);
             return new StringBuilder(data).reverse().toString();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            lock.unlock();
         }
     }
 

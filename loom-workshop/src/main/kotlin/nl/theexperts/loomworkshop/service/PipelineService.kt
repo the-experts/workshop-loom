@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
+import java.util.concurrent.locks.ReentrantLock
 
 @Service
 class PipelineService(
@@ -25,8 +26,7 @@ class PipelineService(
             val future = executor.submit<String> {
                 val externalData = fetchExternalData(data)
                 val dbData = lookupInDatabase(externalData)
-                intensiveComputation("$externalData - $dbData")
-                // intensiveComputationPinned("$externalData - $dbData")
+                intensiveComputationPinned("$externalData - $dbData")
             }
             futures.add(future)
         }
@@ -42,7 +42,8 @@ class PipelineService(
 
     private fun fetchExternalData(inputData: String): String {
         val apiUrl = "/$inputData"
-        restTemplate.getForObject(apiUrl, String::class.java) ?: throw DataFetchException("Failed to fetch external data.")
+        restTemplate.getForObject(apiUrl, String::class.java)
+            ?: throw DataFetchException("Failed to fetch external data.")
         return inputData
     }
 
@@ -52,14 +53,18 @@ class PipelineService(
     }
 
     private fun intensiveComputation(data: String): String {
-            Thread.sleep(100)  // Simulate a delay
-            return data.reversed()  // Just an example transformation
+        Thread.sleep(100)  // Simulate a delay
+        return data.reversed()  // Just an example transformation
     }
 
     private fun intensiveComputationPinned(data: String): String {
-        synchronized(this) {
-            Thread.sleep(100)  // Simulate a delay
-            return data.reversed()  // Just an example transformation
+        val lock = ReentrantLock()
+        lock.lock()
+        return try {
+            Thread.sleep(100)
+            StringBuilder(data).reverse().toString()
+        } finally {
+            lock.unlock()
         }
     }
 }
