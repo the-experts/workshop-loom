@@ -9,7 +9,7 @@ Now that you have successfully refactored the application to use virtual threads
 
 2. **Enabling `tracePinnedThreads`:**
     - Enable `tracePinnedThreads` in the `build.gradle.kts` to help identify pinned threads during execution. 
-    - Add the jvm argument `-Djdk.tracePinnedThreads=short` to the IntelliJ build config ![](jvm-args.png).
+    - Add the jvm argument `-Djdk.tracePinnedThreads=short` to the **IntelliJ build config** ![](jvm-args.png).
    - If you run the application directly with gradle: update your build script as follows:
         ```kotlin
         tasks.withType<BootRun> {
